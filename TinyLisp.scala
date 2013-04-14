@@ -3,10 +3,17 @@ import scala.util.parsing.combinator.RegexParsers
 // lisp-like tiny language
 // (- (+ 3 2) (div 8 2)) => 4
 
+// current status
+// [1.8] Add(Num(1),Num(2))
+// [1.14] parsed: Add(Num(1),Minus(Num(3),Num(1)))
+// [1.20] parsed: Add(Mul(Num(3),Add(Num(4),Num(1))),Num(2))
+// [1.20] parsed: Add(Mul(Num(3),Div(Num(4),Num(1))),Num(2))
+
 object TinyLisp {
   def main(args: Array[String]): Unit = {
     val parser = new TinyLisp
     println(parser.parse("(+ 1 2)"))
+    println(parser.parse("(+ 1 (- 3 1))"))
     println(parser.parse("(+ (* 3 (+ 4 1)) 2)"))
     println(parser.parse("(+ (* 3 (/ 4 1)) 2)"))
   }
