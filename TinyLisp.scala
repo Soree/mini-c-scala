@@ -13,12 +13,33 @@ object TinyLisp {
 }
 
 class TinyLisp extends RegexParsers {
-  def expr : Parser[Any] = lclose ~ op ~ expr ~ expr ~ rclose | intLit
+
+  trait AST
+  case class Num(v: Int) extends AST
+  case class Add(left: AST, right: AST) extends AST
+  case class Minus(left: AST, right: AST) extends AST
+  case class Mul(left: AST, right: AST) extends AST
+  case class Div(left: AST, right: AST) extends AST
+
+  def expr : Parser[AST] = 
+    lclose ~> op ~ expr ~ expr <~ rclose ^^ {
+      case "+" ~ left ~ right => Add(left, right)
+      case "-" ~ left ~ right => Minus(left, right)
+      case "*" ~ left ~ right => Mul(left, right)
+      case "/" ~ left ~ right => Div(left, right)
+    } |
+    intLit 
+  def intLit = negNum | num
+  def num = """[1-9][0-9]*|0""".r ^^ {
+    case value => Num(value.toInt) 
+  }
+  def negNum = lclose ~ "-" ~> num <~ rclose ^^ {
+    case Num(x) => Num( (-1) * x )
+  }
+
   def lclose = "("
   def rclose = ")"
-  def intLit = num | negNum
-  def negNum = lclose ~ "-" ~ num ~ rclose
-  def num = """[1-9][0-9]*|0""".r
   def op = "+" | "-" | "*" | "/" 
+
   def parse(str: String) = parseAll(expr, str)
 }
