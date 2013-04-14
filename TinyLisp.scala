@@ -6,6 +6,7 @@ import scala.util.parsing.combinator.RegexParsers
 object TinyLisp {
   def main(args: Array[String]): Unit = {
     val parser = new TinyLisp
+    println(parser.parse("(+ 1 2)"))
     println(parser.parse("(+ (* 3 (+ 4 1)) 2)"))
   }
 }
